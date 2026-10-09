@@ -1,0 +1,13 @@
+# Zugangsdaten / credentials
+.env
+# Backups aus Folge 013
+*.dump
+*.sql.gz
+# Java / Maven
+target/
+# IDE
+.idea/
+*.iml
+.vscode/
+.DS_Store
+backups/

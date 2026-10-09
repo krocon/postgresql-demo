@@ -1,0 +1,40 @@
+# PostgreSQL 18 für die LOKALE ENTWICKLUNG – nicht für Produktion (Folge 006).
+# Start:  cp .env.example .env  &&  docker compose up -d
+services:
+  db:
+    image: postgres:18                       # feste Hauptversion statt latest
+    env_file: .env                           # Zugangsdaten, nicht im Git
+    ports:
+      - "127.0.0.1:5432:5432"                # nur von diesem Rechner erreichbar
+    volumes:
+      - pgdata:/var/lib/postgresql           # ab Version 18: eine Ebene höher als früher
+      - ./episodes:/episodes:ro              # nur für die Demo: SQL der Folgen im Container
+    command: ["postgres", "-c", "shared_preload_libraries=pg_stat_statements"]  # Folge 014
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+    restart: unless-stopped
+
+  # Folge 014: PostgreSQL 18 mit pgvector (eigener Port und eigenes Volume)
+  # Start:  docker compose --profile vector up -d vector
+  vector:
+    image: pgvector/pgvector:pg18
+    profiles: ["vector"]
+    env_file: .env
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - vectordata:/var/lib/postgresql
+      - ./episodes:/episodes:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pgdata:
+  vectordata:

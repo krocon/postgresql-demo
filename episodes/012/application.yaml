@@ -1,0 +1,7 @@
+# Folge 012 – HikariCP-Einstellungen für Spring Boot (Ausschnitt, passt z. B. in episodes/011/app)
+# Episode 012 – HikariCP settings for Spring Boot (excerpt)
+spring:
+  datasource:
+    hikari:
+      maximum-pool-size: 10     # pro Instanz! / per instance! (Standard / default: 10)
+      connection-timeout: 5000  # ms warten, dann Fehler / wait ms, then fail
